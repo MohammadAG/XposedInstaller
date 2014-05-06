@@ -223,18 +223,6 @@ public class ModulesFragment extends ListFragment implements ModuleListener {
 				startActivity(new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
 					Uri.fromParts("package", module.packageName, null)));
 				return true;
-				
-			case R.id.menu_play_store:
-				Intent i = new Intent(android.content.Intent.ACTION_VIEW);
-				i.setData(Uri.parse(String.format(PLAY_STORE_LINK, module.packageName)));
-				i.setPackage(PLAY_STORE_PACKAGE);
-				try {
-					startActivity(i);
-				} catch (ActivityNotFoundException e) {
-					i.setPackage(null);
-					startActivity(i);
-				}
-				return true;
 
 			case R.id.menu_uninstall:
 				startActivity(new Intent(Intent.ACTION_UNINSTALL_PACKAGE,
