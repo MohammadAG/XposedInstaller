@@ -9,8 +9,9 @@ public class ModuleVersion {
 	public String md5sum;
 	public String changelog;
 	public boolean changelogIsHtml = false;
-	public String branch;
-	
+	public ReleaseType relType = ReleaseType.STABLE;
+	public long uploaded = -1;
+
 	/*package*/ ModuleVersion(Module module) {
 		this.module = module;
 	}

@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="de.robv.android.xposed.installer"
-    android:versionCode="25"
-    android:versionName="2.4.1" >
+    android:versionCode="29"
+    android:versionName="2.5.1" >
 
     <uses-sdk
         android:minSdkVersion="15"
@@ -19,47 +19,63 @@
         android:allowBackup="false"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
+        android:theme="@style/Theme.Light"
         android:name=".XposedApp" >
+
         <activity
             android:name=".WelcomeActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:configChanges="orientation|screenSize"
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".XposedInstallerActivity"
             android:configChanges="orientation|screenSize"
             android:exported="true">
         </activity>
+
         <activity
             android:name=".DownloadDetailsActivity"
-            android:configChanges="orientation|screenSize">
-			<intent-filter>
-			    <action android:name="de.robv.android.xposed.installer.DOWNLOAD_DETAILS" />
-			    <data android:scheme="package" />
-			    <category android:name="android.intent.category.DEFAULT" />
-			</intent-filter>
+            android:configChanges="orientation|screenSize"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="de.robv.android.xposed.installer.DOWNLOAD_DETAILS" />
+                <data android:scheme="package" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <data android:scheme="http" android:host="repo.xposed.info" android:pathPrefix="/module/" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+            </intent-filter>
         </activity>
 
-
-        <receiver android:name=".PackageChangeReceiver" >
+        <receiver android:name=".PackageChangeReceiver"
+            android:exported="false" >
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_ADDED" />
                 <action android:name="android.intent.action.PACKAGE_CHANGED" />
                 <action android:name="android.intent.action.PACKAGE_REMOVED" />
-
                 <data android:scheme="package" />
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".DownloadReceiver">
+        <receiver android:name=".DownloadReceiver"
+            android:exported="true"
+            android:permission="android.permission.SEND_DOWNLOAD_COMPLETED_INTENTS" >
             <intent-filter>
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
             </intent-filter>
         </receiver>
+
+        <receiver android:name=".util.NotificationUtil$RebootReceiver"
+            android:exported="false" />
     </application>
 
 </manifest>

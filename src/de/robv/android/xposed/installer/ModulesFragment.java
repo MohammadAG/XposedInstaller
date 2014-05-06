@@ -8,10 +8,14 @@ import android.app.ListFragment;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuItem;
@@ -31,23 +35,34 @@ import de.robv.android.xposed.installer.util.ModuleUtil;
 import de.robv.android.xposed.installer.util.ModuleUtil.InstalledModule;
 import de.robv.android.xposed.installer.util.ModuleUtil.ModuleListener;
 import de.robv.android.xposed.installer.util.NavUtil;
+import de.robv.android.xposed.installer.util.NotificationUtil;
 import de.robv.android.xposed.installer.util.RepoLoader;
+import de.robv.android.xposed.installer.util.ThemeUtil;
 
 public class ModulesFragment extends ListFragment implements ModuleListener {
 	public static final String SETTINGS_CATEGORY = "de.robv.android.xposed.category.MODULE_SETTINGS";
 	private static final String NOT_ACTIVE_NOTE_TAG = "NOT_ACTIVE_NOTE";
 	private static final String PLAY_STORE_PACKAGE = "com.android.vending";
 	private static final String PLAY_STORE_LINK = "https://play.google.com/store/apps/details?id=%s";
+	private static String PLAY_STORE_LABEL = null;
 	private int installedXposedVersion;
 	private ModuleUtil mModuleUtil;
 	private RepoLoader mRepoLoader;
 	private ModuleAdapter mAdapter = null;
+	private PackageManager mPm = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-	    super.onCreate(savedInstanceState);
-	    mModuleUtil = ModuleUtil.getInstance();
-	    mRepoLoader = RepoLoader.getInstance();
+		super.onCreate(savedInstanceState);
+		mModuleUtil = ModuleUtil.getInstance();
+		mRepoLoader = RepoLoader.getInstance();
+		mPm = getActivity().getPackageManager();
+		if (PLAY_STORE_LABEL == null) {
+			try {
+				ApplicationInfo ai = mPm.getApplicationInfo(PLAY_STORE_PACKAGE, 0);
+				PLAY_STORE_LABEL = mPm.getApplicationLabel(ai).toString();
+			} catch (NameNotFoundException ignored) {}
+		}
 	}
 
 	@Override
@@ -72,10 +87,22 @@ public class ModulesFragment extends ListFragment implements ModuleListener {
 		setListAdapter(mAdapter);
 		setEmptyText(getActivity().getString(R.string.no_xposed_modules_found));
 		getListView().setFastScrollEnabled(true);
-		getListView().setDivider(getResources().getDrawable(R.color.list_divider));
-		getListView().setDividerHeight(1);
 		registerForContextMenu(getListView());
 		mModuleUtil.addListener(this);
+
+		DisplayMetrics metrics = getResources().getDisplayMetrics();
+		int sixDp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 6, metrics);
+		int eightDp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, metrics);
+		getListView().setDivider(null);
+		getListView().setDividerHeight(sixDp);
+		getListView().setPadding(eightDp, eightDp, eightDp, eightDp);
+		getListView().setClipToPadding(false);
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		NotificationUtil.cancelAll();
 	}
 
 	@Override
@@ -150,11 +177,12 @@ public class ModulesFragment extends ListFragment implements ModuleListener {
 		} else if (NavUtil.parseURL(downloadModule.support) == null) {
 			menu.removeItem(R.id.menu_support);
 		}
-		
-		String installer = getActivity().getPackageManager().getInstallerPackageName(installedModule.packageName);
-		if (!PLAY_STORE_PACKAGE.equals(installer)) {
+
+		String installer = mPm.getInstallerPackageName(installedModule.packageName);
+		if (PLAY_STORE_LABEL != null && PLAY_STORE_PACKAGE.equals(installer))
+			menu.findItem(R.id.menu_play_store).setTitle(PLAY_STORE_LABEL);
+		else
 			menu.removeItem(R.id.menu_play_store);
-		}
 	}
 
 	@Override
@@ -177,6 +205,18 @@ public class ModulesFragment extends ListFragment implements ModuleListener {
 			case R.id.menu_support:
 				Module downloadModule = mRepoLoader.getModule(module.packageName);
 				NavUtil.startURL(getActivity(), downloadModule.support);
+				return true;
+
+			case R.id.menu_play_store:
+				Intent i = new Intent(android.content.Intent.ACTION_VIEW);
+				i.setData(Uri.parse(String.format(PLAY_STORE_LINK, module.packageName)));
+				i.setPackage(PLAY_STORE_PACKAGE);
+				try {
+					startActivity(i);
+				} catch (ActivityNotFoundException e) {
+					i.setPackage(null);
+					startActivity(i);
+				}
 				return true;
 
 			case R.id.menu_app_info:
@@ -233,7 +273,7 @@ public class ModulesFragment extends ListFragment implements ModuleListener {
 
 	private class ModuleAdapter extends ArrayAdapter<InstalledModule> {
 		public ModuleAdapter(Context context) {
-			super(context, R.layout.list_item_module, R.id.text);
+			super(context, R.layout.list_item_module, R.id.title);
 		}
 
 		@Override
@@ -249,13 +289,17 @@ public class ModulesFragment extends ListFragment implements ModuleListener {
 						boolean changed = mModuleUtil.isModuleEnabled(packageName) ^ isChecked;
 						if (changed) {
 							mModuleUtil.setModuleEnabled(packageName, isChecked);
-							mModuleUtil.updateModulesList();
+							mModuleUtil.updateModulesList(true);
 						}
 					}
 				});
 			}
 
 			InstalledModule item = getItem(position);
+
+			TextView version = (TextView) view.findViewById(R.id.version_name);
+			version.setText(item.versionName);
+
 			// Store the package name in some views' tag for later access
 			((CheckBox) view.findViewById(R.id.checkbox)).setTag(item.packageName);
 			view.setTag(item.packageName);
@@ -265,10 +309,10 @@ public class ModulesFragment extends ListFragment implements ModuleListener {
 			TextView descriptionText = (TextView) view.findViewById(R.id.description);
 			if (!item.getDescription().isEmpty()) {
 				descriptionText.setText(item.getDescription());
-				descriptionText.setTextColor(0xFF777777);
+				descriptionText.setTextColor(ThemeUtil.getThemeColor(getContext(), android.R.attr.textColorSecondary));
 			} else {
-				descriptionText.setText(getActivity().getString(R.string.module_empty_description));
-				descriptionText.setTextColor(0xFFCC7700);
+				descriptionText.setText(getString(R.string.module_empty_description));
+				descriptionText.setTextColor(getResources().getColor(R.color.warning));
 			}
 
 			CheckBox checkbox = (CheckBox) view.findViewById(R.id.checkbox);
@@ -281,12 +325,12 @@ public class ModulesFragment extends ListFragment implements ModuleListener {
 				warningText.setVisibility(View.VISIBLE);
 			} else if (installedXposedVersion != 0 && item.minVersion > installedXposedVersion) {
 				checkbox.setEnabled(false);
-				warningText.setText(String.format(getString(R.string.warning_xposed_min_version), 
+				warningText.setText(String.format(getString(R.string.warning_xposed_min_version),
 						item.minVersion));
 				warningText.setVisibility(View.VISIBLE);
 			} else if (item.minVersion < ModuleUtil.MIN_MODULE_VERSION) {
 				checkbox.setEnabled(false);
-				warningText.setText(String.format(getString(R.string.warning_min_version_too_low), 
+				warningText.setText(String.format(getString(R.string.warning_min_version_too_low),
 						item.minVersion, ModuleUtil.MIN_MODULE_VERSION));
 				warningText.setVisibility(View.VISIBLE);
 			} else {

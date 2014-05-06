@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
     <!-- General/various strings -->
-    <string name="app_name">Instalador do Xposed</string>
     <string name="menuSend">Enviar</string>
     <string name="menuSaveToSd">Salvar para o cartão SD</string>
     <string name="xposed_not_active">A versão mais recente do Xposed ainda não foi ativada. Você instalou o framework e reiniciou o dispositivo?</string>
@@ -55,9 +54,8 @@
     <string name="menuSearch">Pesquisar</string>
     <string name="menuReload">Recarregar</string>
     <string name="changes">Novidades:</string>
-    <string name="branch_display">(%s marca)</string>
     <string name="download_author">por %s</string>
-    <string name="download_unknown_author" tools:ignore="Typos">autor desconhecido</string>
+    <string name="download_unknown_author">autor desconhecido</string>
     <string name="download_status_installed">Instalado (versão %s)</string>
     <string name="download_status_update_available">Atualização disponível (versão %1$s \u2192 %2$s)</string>
     <string name="download_timestamps">Adicionado em %1$s \u00b7 Atualizado em %2$s</string>

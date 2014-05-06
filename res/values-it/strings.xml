@@ -2,7 +2,6 @@
 <resources>
 
     <!-- General/various strings -->
-    <string name="app_name">Xposed Installer</string>
 
     <!-- Welcome screen / main sections -->
     <string name="welcome">Benvenuto in <b>Xposed Installer</b>!\nScegli cosa desideri fare:</string>
@@ -45,7 +44,6 @@
     <string name="menuSearch">Cerca</string>
     <string name="menuReload">Aggiorna</string>
     <string name="changes">Cambia:</string>
-    <string name="branch_display">(%s branch)</string>
     <string name="download_author">di %s</string>
     <string name="download_unknown_author">autore sconosciuto</string>
     <string name="download_status_installed">Installato (versione %s)</string>

@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
     <!-- General/various strings -->
-    <string name="app_name">Εγκατάσταση Xposed</string>
     <string name="menuSend">Αποστολή</string>
     <string name="menuSaveToSd">Αποθήκευση στην κάρτα SD</string>
     <string name="xposed_not_active">Η τελευταία έκδοση του Xposed δεν είναι ενεργή προς το παρόν. Εγκαταστήσατε το framework και επανεκκινήσατε;</string>
@@ -55,7 +54,6 @@
     <string name="menuSearch">Αναζήτηση</string>
     <string name="menuReload">Ανανέωση</string>
     <string name="changes">Αλλαγές:</string>
-    <string name="branch_display">(%s branch)</string>
     <string name="download_author">από %s</string>
     <string name="download_unknown_author">άγνωστος δημιουργός</string>
     <string name="download_status_installed">Εγκατεστημένη (έκδοση %s)</string>
@@ -78,9 +76,9 @@
     <string name="settings_group_download">Κατέβασμα</string>
     <string name="settings_enable_downloads">Ενεργοποίηση κατεβασμάτων</string>
     <string name="settings_enable_downloads_summary">Να επιτραπεί στην Εγκατάσταση του Xposed να ελέγχει για αναβαθμίσεις και νέα modules</string>
-    <string name="settings_group_experimental" tools:ignore="UnusedResources">Πειραματικό</string>
-    <string name="settings_performance_experiment" tools:ignore="UnusedResources">Πείραμα έπίδοσης</string>
-    <string name="settings_performance_experiment_summary" tools:ignore="UnusedResources">Αν ενεργοποιήσετε αυτήν την επιλογή, η επίδοση του συστήματος σας μπορεί είτε να μεγαλώσει, είτε να μικραίνει ή να μείνει ίδια. Δοκιμάστε το ελεύθερα και αναφέρετε τι αποτέλεσμα έχει (ή το ότι δεν έχει αποτέλεσμα). Μπορείτε να επαναεγκαταστήσετε το framework και να επανεκκινήσετε αφού αλλάξετε αυτήν την επιλογή.</string>
+    <string name="settings_group_experimental">Πειραματικό</string>
+    <string name="settings_performance_experiment">Πείραμα έπίδοσης</string>
+    <string name="settings_performance_experiment_summary">Αν ενεργοποιήσετε αυτήν την επιλογή, η επίδοση του συστήματος σας μπορεί είτε να μεγαλώσει, είτε να μικραίνει ή να μείνει ίδια. Δοκιμάστε το ελεύθερα και αναφέρετε τι αποτέλεσμα έχει (ή το ότι δεν έχει αποτέλεσμα). Μπορείτε να επαναεγκαταστήσετε το framework και να επανεκκινήσετε αφού αλλάξετε αυτήν την επιλογή.</string>
 
     <!--  Logs tab  -->
     <string name="logs_load_failed">Αδυναμία διαβάσματος των αρχείων καταγραφής:</string>

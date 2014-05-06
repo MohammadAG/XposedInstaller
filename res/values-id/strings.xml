@@ -2,7 +2,6 @@
 <resources>
 
     <!-- General/various strings -->
-    <string name="app_name">Installer Xposed</string>
 
     <!-- Welcome screen / main sections -->
     <string name="welcome">Selamat datang di <b>Installer Xposed</b>!\nPilih pilihan Anda:</string>
@@ -50,7 +49,6 @@
     <string name="menuSearch">Cari</string>
     <string name="menuReload">Reload</string>
     <string name="changes">Perubahan:</string>
-    <string name="branch_display">(cabang %s)</string>
     <string name="download_author">oleh %s</string>
     <string name="download_unknown_author">pembuat tdk diketahui</string>
     <string name="download_status_installed">Terinstall (versi %s)</string>

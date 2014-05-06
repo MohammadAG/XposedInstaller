@@ -2,7 +2,6 @@
 <resources>
 
     <!-- General/various strings -->
-    <string name="app_name">Xposed安裝器</string>
 
     <!-- Welcome screen / main sections -->
     <string name="welcome">歡迎使用<b>Xposed安裝器</b>!\n請選擇您想進行的操作：</string>
@@ -45,7 +44,6 @@
     <string name="menuSearch">搜索</string>
     <string name="menuReload">重新載入</string>
     <string name="changes">變更：</string>
-    <string name="branch_display">(%s 分支)</string>
     <string name="download_author">作者：%s</string>
     <string name="download_unknown_author">未知作者</string>
     <string name="download_status_installed">已安裝(版本 %s)</string>

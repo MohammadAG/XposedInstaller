@@ -2,7 +2,6 @@
 <resources>
 
     <!-- General/various strings -->
-    <string name="app_name">Xposed Installer</string>
 
     <!-- Welcome screen / main sections -->
     <string name="welcome">مرحبا بكم <b>المثبت إكسبوسيد</b>!\nالرجاء اختيار ما تريد القيام به:</string>
@@ -50,7 +49,6 @@
     <string name="menuSearch">بحث</string>
     <string name="menuReload">إعادة تحميل</string>
     <string name="changes">التغييرات:</string>
-    <string name="branch_display">(%s branch)</string>
     <string name="download_author">من قبل %s</string>
     <string name="download_unknown_author">مؤلف غير معروف</string>
     <string name="download_status_installed">تثبيت (version %s)</string>
@@ -82,7 +80,7 @@
     <string name="about_developers"><a href="http://forum.xda-developers.com/member.php?u=4419114">rovo89</a> و <a href="http://forum.xda-developers.com/member.php?u=4322181">Tungstwenty</a></string>
     <string name="about_developers_warning">الرجاء القيام <b>لا</b> اتصل بنا مباشرة للدعم، واستخدام الارتباط الموجود أدناه.</string>
     <string name="about_translator_label">ترجمات:</string>
-    <string name="translator" />
+    <string name="translator">aljohanei</string>
     <string name="about_version_label">إصدار من هذا التطبيق:</string>
     <string name="about_source_label">التعليمات البرمجية المصدر:</string>
     <string name="about_support_label">الحصول على الدعم في:</string>
