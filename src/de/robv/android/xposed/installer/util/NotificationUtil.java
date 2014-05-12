@@ -47,7 +47,7 @@ public final class NotificationUtil {
 
 	public static void showNotActivatedNotification(String packageName, String appName) {
 		Intent iModulesTab = new Intent(sContext, XposedInstallerActivity.class);
-		iModulesTab.putExtra(XposedInstallerActivity.EXTRA_OPEN_TAB, XposedInstallerActivity.TAB_MODULES);
+		iModulesTab.putExtra(XposedInstallerActivity.EXTRA_SECTION, XposedInstallerActivity.TAB_MODULES);
 		iModulesTab.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
 		PendingIntent pModulesTab = PendingIntent.getActivity(sContext, PENDING_INTENT_OPEN_MODULES,
@@ -60,7 +60,7 @@ public final class NotificationUtil {
 			.setTicker(title)
 			.setContentIntent(pModulesTab)
 			.setAutoCancel(true)
-			.setSmallIcon(android.R.drawable.ic_dialog_info);
+			.setSmallIcon(R.drawable.ic_notification);
 
 		if (Build.VERSION.SDK_INT >= 16) {
 			Intent iActivateAndReboot = new Intent(sContext, RebootReceiver.class);
@@ -84,7 +84,7 @@ public final class NotificationUtil {
 
 	public static void showModulesUpdatedNotification() {
 		Intent iInstallTab = new Intent(sContext, XposedInstallerActivity.class);
-		iInstallTab.putExtra(XposedInstallerActivity.EXTRA_OPEN_TAB, XposedInstallerActivity.TAB_INSTALL);
+		iInstallTab.putExtra(XposedInstallerActivity.EXTRA_SECTION, XposedInstallerActivity.TAB_INSTALL);
 		iInstallTab.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		PendingIntent pInstallTab = PendingIntent.getActivity(sContext, PENDING_INTENT_OPEN_INSTALL,
 				iInstallTab, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -97,7 +97,7 @@ public final class NotificationUtil {
 			.setTicker(title)
 			.setContentIntent(pInstallTab)
 			.setAutoCancel(true)
-			.setSmallIcon(android.R.drawable.ic_dialog_info);
+			.setSmallIcon(R.drawable.ic_notification);
 
 		if (Build.VERSION.SDK_INT >= 16) {
 			Intent iSoftReboot = new Intent(sContext, RebootReceiver.class);
@@ -134,7 +134,9 @@ public final class NotificationUtil {
 
 			if (intent.hasExtra(EXTRA_ACTIVATE_MODULE)) {
 				String packageName = intent.getStringExtra(EXTRA_ACTIVATE_MODULE);
-				ModuleUtil.getInstance().setModuleEnabled(packageName, true);
+				ModuleUtil moduleUtil = ModuleUtil.getInstance();
+				moduleUtil.setModuleEnabled(packageName, true);
+				moduleUtil.updateModulesList(false);
 				Toast.makeText(sContext, R.string.module_activated, Toast.LENGTH_SHORT).show();
 			}
 
