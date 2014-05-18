@@ -10,24 +10,30 @@ import android.os.Bundle;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import de.robv.android.xposed.installer.repo.Module;
 import de.robv.android.xposed.installer.repo.ModuleGroup;
 import de.robv.android.xposed.installer.util.ModuleUtil;
 import de.robv.android.xposed.installer.util.ModuleUtil.InstalledModule;
+import de.robv.android.xposed.installer.util.ModuleUtil.ModuleListener;
 import de.robv.android.xposed.installer.util.RepoLoader;
 import de.robv.android.xposed.installer.util.RepoLoader.RepoListener;
 
 
-public class DownloadDetailsActivity extends XposedDropdownNavActivity implements RepoListener {
+public class DownloadDetailsActivity extends XposedDropdownNavActivity implements RepoListener, ModuleListener {
 
 	private ViewPager mPager;
 	private String[] mPageTitles;
 	private String mPackageName;
 	private static RepoLoader sRepoLoader = RepoLoader.getInstance();
+	private static ModuleUtil sModuleUtil = ModuleUtil.getInstance();
 	private ModuleGroup mModuleGroup;
 	private Module mModule;
+	private InstalledModule mInstalledModule;
 
 	public static final int DOWNLOAD_DESCRIPTION = 0;
 	public static final int DOWNLOAD_VERSIONS = 1;
@@ -40,8 +46,11 @@ public class DownloadDetailsActivity extends XposedDropdownNavActivity implement
 		if (mModuleGroup != null)
 			mModule = mModuleGroup.getModule();
 
+		mInstalledModule = ModuleUtil.getInstance().getModule(mPackageName);
+
 		super.onCreate(savedInstanceState);
 		sRepoLoader.addListener(this, false);
+		sModuleUtil.addListener(this);
 		setNavItem(XposedDropdownNavActivity.TAB_DOWNLOAD);
 
 		if (mModuleGroup != null) {
@@ -58,8 +67,7 @@ public class DownloadDetailsActivity extends XposedDropdownNavActivity implement
 			mPager.setAdapter(new ScreenSlidePagerAdapter(getFragmentManager()));
 
 			// Updates available => start on the versions page
-			InstalledModule installed = ModuleUtil.getInstance().getModule(mPackageName);
-			if (installed != null && installed.isUpdate(sRepoLoader.getLatestVersion(mModule)))
+			if (mInstalledModule != null && mInstalledModule.isUpdate(sRepoLoader.getLatestVersion(mModule)))
 				mPager.setCurrentItem(DOWNLOAD_VERSIONS);
 
 		} else {
@@ -100,24 +108,60 @@ public class DownloadDetailsActivity extends XposedDropdownNavActivity implement
 	protected void onDestroy() {
 		super.onDestroy();
 		sRepoLoader.removeListener(this);
+		sModuleUtil.removeListener(this);
 	}
 
 	public Module getModule() {
 		return mModule;
 	}
 
+	public InstalledModule getInstalledModule() {
+		return mInstalledModule;
+	}
+
 	public void gotoPage(int page) {
 		mPager.setCurrentItem(page);
 	}
 
-	@Override
-	public void onRepoReloaded(RepoLoader loader) {
+	private void reload() {
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				recreate();
 			}
 		});
+	}
+
+	@Override
+	public void onRepoReloaded(RepoLoader loader) {
+		reload();
+	}
+
+	@Override
+	public void onInstalledModulesReloaded(ModuleUtil moduleUtil) {
+		reload();
+	}
+
+	@Override
+	public void onSingleInstalledModuleReloaded(ModuleUtil moduleUtil, String packageName, InstalledModule module) {
+		if (packageName.equals(mPackageName))
+			reload();
+	}
+
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.menu_download_details, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.menu_refresh:
+				RepoLoader.getInstance().triggerReload(true);
+				return true;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 
 	@Override
